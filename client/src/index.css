@@ -1,0 +1,183 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: night;
+}
+
+@theme {
+  --color-cyan-glow: #00f0ff;
+  --color-violet-glow: #a855f7;
+  --color-surface: #0a0a0f;
+  --color-surface-light: #12121a;
+  --color-surface-card: #16161f;
+  --color-text-dim: #6b7280;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* base resets */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-cyan-glow) var(--color-surface);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-surface);
+  color: #e2e8f0;
+  margin: 0;
+}
+
+::selection {
+  background: rgba(0, 240, 255, 0.2);
+  color: #fff;
+}
+
+/* cursor blink for terminal */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* fade-in-up for scroll sections */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* scanline overlay */
+.scanlines::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.015) 2px,
+    rgba(0, 240, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* subtle glow pulse on hover */
+.glow-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.glow-hover:hover {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), 0 0 40px rgba(0, 240, 255, 0.05);
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+/* typing animation container */
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--color-cyan-glow);
+  animation: blink 0.8s step-end infinite;
+}
+
+/* nav link active indicator */
+.nav-active {
+  position: relative;
+}
+.nav-active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-cyan-glow), var(--color-violet-glow));
+  border-radius: 1px;
+}
+
+/* card shimmer effect on hover */
+.card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.card-shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(0, 240, 255, 0.03) 45%,
+    rgba(0, 240, 255, 0.05) 50%,
+    rgba(0, 240, 255, 0.03) 55%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+.card-shimmer:hover::before {
+  transform: translateX(100%);
+}
+
+/* markdown content styling */
+.prose-custom h1 { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.8rem; color: #f1f5f9; }
+.prose-custom h2 { font-size: 1.4rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.6rem; color: #e2e8f0; }
+.prose-custom h3 { font-size: 1.15rem; font-weight: 500; margin-top: 1.2rem; margin-bottom: 0.5rem; color: #cbd5e1; }
+.prose-custom p { margin-bottom: 1rem; line-height: 1.75; color: #94a3b8; }
+.prose-custom code {
+  background: var(--color-surface-light);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--color-cyan-glow);
+}
+.prose-custom pre {
+  background: var(--color-surface-light);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+.prose-custom pre code {
+  background: none;
+  padding: 0;
+}
+.prose-custom a {
+  color: var(--color-cyan-glow);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-custom ul, .prose-custom ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  color: #94a3b8;
+}
+.prose-custom li { margin-bottom: 0.3rem; }
+.prose-custom blockquote {
+  border-left: 3px solid var(--color-violet-glow);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #94a3b8;
+  font-style: italic;
+}
