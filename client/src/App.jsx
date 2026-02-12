@@ -18,6 +18,11 @@ export default function App() {
     const navigate = useNavigate()
     const showNav = pathname !== '/'
 
+    // scroll to top on every route change
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [pathname])
+
     // left/right arrow keys to change pages
     useEffect(() => {
         const handler = (e) => {
