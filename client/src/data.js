@@ -5,7 +5,7 @@ export const posts = [
         id: 1,
         title: 'Building Anomaly — A Cross-Platform Markdown Editor',
         slug: 'building-anomaly-editor',
-        excerpt: 'How I designed and built a sleek, cross-platform markdown editor with live preview, an integrated file explorer, and a dark-first UI — all powered by Electron and React.',
+        excerpt: 'The story behind Anomaly — a cross-platform markdown editor I built with Electron and React because every other option was either ugly or bloated.',
         content: `## The Idea
 
 I wanted a markdown editor that felt native, looked modern, and stayed out of the way. Most editors I'd tried were either bloated with features I didn't need or looked like they were designed in 2012. So I built my own.
@@ -41,9 +41,9 @@ The frontend uses **React 19** with **Styled Components** for scoped, themeable 
 
 One of the goals was making distribution painless. The build pipeline (\`npm run build-dist\`) handles the full flow — compiling the React app, packaging it with Electron, and creating a ZIP for portable distribution. Windows users get both a portable version and a full installer.
 
-## Takeaway
+## Thoughts
 
-Building Anomaly taught me a lot about bridging web technologies with native OS capabilities. Electron gets a bad reputation for memory usage, but when you keep the scope focused and avoid unnecessary dependencies, you can build something that feels genuinely lightweight.`,
+Building Anomaly taught me a lot about making web tech feel native. Electron gets a bad rap for memory usage, but honestly, if you keep things focused and don't pull in a million dependencies, it's fine. The app opens fast and doesn't eat my RAM — that's good enough for me.`,
         category: 'development',
         created_at: '2026-02-10',
     },
@@ -51,19 +51,19 @@ Building Anomaly taught me a lot about bridging web technologies with native OS 
         id: 2,
         title: 'Contributing to EOEngine — A Modern Endless Online Server Emulator',
         slug: 'eoengine-server-emulator',
-        excerpt: 'A deep dive into EOEngine — a community-driven C++ server emulator for Endless Online, built for accessibility, extensibility, and cross-platform support.',
+        excerpt: 'My contributions to EOEngine, a community-maintained C++ server emulator for Endless Online. Mostly quest systems, instancing, and build tooling.',
         content: `## What is EOEngine?
 
 EOEngine is a modern, community-focused fork of Etheos — a high-performance emulator for Endless Online servers. The project traces its lineage through years of open-source development: from the original EOServ, through EOSource, to Etheos, and now EOEngine.
 
 The goal is clear: make it easier for players, hobbyists, and developers to create and host their own Endless Online servers.
 
-## Key Objectives
+## Goals
 
-- **Accessibility**: Lower the barrier for hosting private servers
-- **Customization**: Extend the emulator with features, config options, and mod support
-- **Community-Centric**: Encourage contributions and shared learning
-- **Ongoing Maintenance**: Regular updates and modern development practices
+- Make it easier for people to spin up their own servers
+- Add features and config hooks that the original didn't have
+- Keep the codebase approachable for new contributors
+- Actually maintain the thing (regular updates, modern C++ practices)
 
 ## Building the Project
 
@@ -95,9 +95,9 @@ Testing uses EOBot from the EndlessClient project. These tests simulate actual g
 
 The codebase is **93.6% C++**, with supporting infrastructure in CMake, Shell, PowerShell, and Python. It targets modern C++ standards and is compatible with Visual Studio 2017/2019 on Windows and g++ on Linux.
 
-## Takeaway
+## Looking Back
 
-Working on EOEngine has been a lesson in maintaining a large, legacy-rooted C++ codebase while pushing it toward modern standards. It's community-driven development at its best — open contributions, shared documentation, and a collective effort to keep an old game's ecosystem alive.`,
+Working on a codebase this old forces you to be pragmatic. You can't just rewrite everything — you have to understand why things were done a certain way before you change them. It's been a good exercise in reading other people's code and making incremental improvements without breaking the stuff that already works.`,
         category: 'open-source',
         created_at: '2026-02-08',
     },
@@ -151,7 +151,7 @@ export const projects = [
     {
         id: 1,
         title: 'Anomaly Editor',
-        description: 'A sleek, modern cross-platform Markdown editor with dark theme, live preview, integrated file explorer, and autosave — built with Electron and React.',
+        description: 'Cross-platform Markdown editor with dark theme, live preview, file explorer sidebar, and autosave. Electron + React.',
         status: 'active',
         tech: 'Electron, React, Node.js, Styled Components',
         url: 'https://github.com/Caibran/Anomaly',
@@ -168,7 +168,7 @@ export const projects = [
     {
         id: 2,
         title: 'EOEngine',
-        description: 'A community-driven, modern C++ server emulator for Endless Online — supporting multi-platform builds, Docker deployment, and multiple database backends.',
+        description: 'Modern C++ server emulator for Endless Online. Cross-platform builds, Docker support, SQLite/MariaDB backends.',
         status: 'active',
         tech: 'C++, CMake, SQLite, MariaDB, Docker',
         url: 'https://github.com/EO-Resource/EOEngine',
