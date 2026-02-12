@@ -8,13 +8,15 @@ import DevHub from './pages/DevHub'
 import Gallery from './pages/Gallery'
 import Contact from './pages/Contact'
 import Navbar from './components/Navbar'
+import Starfield from './components/Starfield'
 
 export default function App() {
     const { pathname } = useLocation()
     const showNav = pathname !== '/'
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen relative">
+            <Starfield />
             {showNav && <Navbar />}
             <Routes>
                 <Route path="/" element={<Landing />} />
