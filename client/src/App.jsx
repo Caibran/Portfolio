@@ -1,4 +1,5 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import Landing from './pages/Landing'
 import Home from './pages/Home'
 import About from './pages/About'
@@ -10,9 +11,34 @@ import Contact from './pages/Contact'
 import Navbar from './components/Navbar'
 import Starfield from './components/Starfield'
 
+const navPages = ['/home', '/about', '/casestudies', '/devhub', '/gallery', '/contact']
+
 export default function App() {
     const { pathname } = useLocation()
+    const navigate = useNavigate()
     const showNav = pathname !== '/'
+
+    // left/right arrow keys to change pages
+    useEffect(() => {
+        const handler = (e) => {
+            if (pathname === '/' || e.metaKey || e.ctrlKey || e.altKey) return
+            const tag = document.activeElement?.tagName
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+
+            const idx = navPages.indexOf(pathname)
+            if (idx === -1) return
+
+            if (e.key === 'ArrowRight') {
+                e.preventDefault()
+                navigate(navPages[(idx + 1) % navPages.length])
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault()
+                navigate(navPages[(idx - 1 + navPages.length) % navPages.length])
+            }
+        }
+        window.addEventListener('keydown', handler)
+        return () => window.removeEventListener('keydown', handler)
+    }, [pathname, navigate])
 
     return (
         <div className="min-h-screen relative">

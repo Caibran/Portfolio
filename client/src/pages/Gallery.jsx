@@ -15,9 +15,7 @@ function ProjectDetail({ project, onClose }) {
     const detailRef = useRef(null)
 
     useEffect(() => {
-        if (detailRef.current) {
-            detailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' })
     }, [])
 
     const statuses = Array.isArray(project.status) ? project.status : [project.status]
