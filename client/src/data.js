@@ -112,6 +112,15 @@ export const projects = [
         tech: 'Electron, React, Node.js, Styled Components',
         url: 'https://github.com/Caibran/Anomaly',
         created_at: '2026-02-10',
+        startedAt: '2025-11-15',
+        progress: 72,
+        currentFocus: 'Implementing tab support and syntax highlighting for code blocks',
+        goals: [
+            'Multi-tab editing with drag-and-drop reorder',
+            'Syntax-highlighted code fences in preview',
+            'Export to PDF and HTML',
+            'Plugin system for custom markdown extensions',
+        ],
     },
     {
         id: 2,
@@ -121,5 +130,14 @@ export const projects = [
         tech: 'C++, CMake, SQLite, MariaDB, Docker',
         url: 'https://github.com/EO-Resource/EOEngine',
         created_at: '2026-02-08',
+        startedAt: '2025-08-20',
+        progress: 45,
+        currentFocus: 'Quest system implementation and integration testing',
+        goals: [
+            'Complete quest rule engine with all condition types',
+            'Guild system with ranks and permissions',
+            'Automated CI/CD pipeline for release builds',
+            'Web-based admin dashboard',
+        ],
     },
 ]
