@@ -23,18 +23,20 @@ export default function About() {
                         <h2 className="text-xl font-semibold text-white mb-4">Who I am</h2>
                         <div className="space-y-4 text-[var(--color-text-dim)] leading-relaxed">
                             <p>
-                                I'm a developer who thrives in complexity. I started by modifying game engines — picking apart network
-                                protocols, rewriting rendering pipelines, and debugging race conditions at 3 AM. That foundational work
-                                taught me how software really works, not just the abstractions on top.
+                                I'm Brandon — a self-taught web designer and developer who's been building for the web since
+                                before I could drive. What started as a kid tinkering with HTML pages and CSS experiments
+                                grew into a genuine passion for crafting digital experiences. I never stopped learning,
+                                and I never needed a classroom to do it.
                             </p>
                             <p>
-                                Today I split my time between systems-level work and full-stack development. I'm drawn to projects
+                                Over the years that curiosity expanded well beyond the browser. I've dug into game engine internals,
+                                picked apart network protocols, and spent more late nights debugging than I'd like to admit.
+                                That foundational work taught me how software really works — not just the abstractions on top.
+                            </p>
+                            <p>
+                                Today I split my time between web design and systems-level work. I'm drawn to projects
                                 that demand both — where understanding memory layout matters as much as getting the UI right.
-                                Most of my recent work involves game server development, tooling, and web platforms.
-                            </p>
-                            <p>
-                                I believe the best code is the code you can delete. I write for clarity, maintain relentlessly,
-                                and document the "why" more than the "what."
+                                I believe the best code is the code you can delete, and I document the "why" more than the "what."
                             </p>
                         </div>
                     </div>

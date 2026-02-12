@@ -47,7 +47,7 @@ export default function Home() {
                             <span className="text-[var(--color-text-dim)]">that matter.</span>
                         </h1>
                         <p className="text-lg text-[var(--color-text-dim)] leading-relaxed max-w-lg mb-8">
-                            Systems developer, problem solver, and relentless learner.
+                            Web designer, problem solver, and relentless learner.
                             This is where I document the work, the process, and the lessons.
                         </p>
                         <div className="flex items-center gap-4">
@@ -185,7 +185,7 @@ export default function Home() {
                             chatting about tech. Reach out through any of the channels below.
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
-                            <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                            <a href="https://github.com/Caibran" target="_blank" rel="noopener noreferrer"
                                 className="px-5 py-2.5 bg-[var(--color-surface-card)] border border-white/[0.06] rounded-lg text-sm text-[var(--color-text-dim)] hover:text-white hover:border-white/20 transition-colors glow-hover">
                                 GitHub
                             </a>
