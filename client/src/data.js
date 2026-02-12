@@ -1,4 +1,4 @@
-// Static data layer — replaces the Express/SQLite API for GitHub Pages deployment
+// Static data for posts + projects (no backend needed for GH Pages)
 
 export const posts = [
     {
@@ -101,6 +101,50 @@ Working on EOEngine has been a lesson in maintaining a large, legacy-rooted C++ 
         category: 'open-source',
         created_at: '2026-02-08',
     },
+    {
+        id: 3,
+        title: 'Shards of Eternity — Building an MMO from Scratch',
+        slug: 'shards-of-eternity',
+        excerpt: 'A hobby MMO project built on top of Endless Online\'s architecture — custom server engine in C, a C# game client, interactive map tooling, and a PHP community site.',
+        content: `## How It Started
+
+I grew up playing Endless Online, one of those tiny 2D MMOs that somehow had a massive community. When the official servers went quiet, I wanted to keep that experience alive — but on my own terms. Not just running someone else's server, but actually understanding the full stack and building something new on top of it.
+
+That's how Shards of Eternity started. It's a hobby project, and I'm not pretending otherwise — but it's taught me more about real-world distributed systems than any course ever could.
+
+## The Stack
+
+The project spans four repositories, each handling a different piece of the puzzle:
+
+### Eternity Engine (Server)
+A C-based game server forked from Etheos. It handles all the core game logic — player movement, combat, NPCs, item systems, map transitions, the works. I've been extending it with custom features like buff systems, quest engines, shrine discovery, and instancing. It's not glamorous work, but digging through thousands of lines of C to add new packet handlers is genuinely fun.
+
+### Game Client (C#)
+Forked from EndlessClient, the client is built in C# with MonoGame. I've been adding things like floating combat text, health bars, buff notification HUDs, and fullscreen support. It's the part players actually see, so I spend a lot of time tweaking animations and making the UI feel responsive.
+
+### Map Editor (JavaScript)
+An interactive browser-based map editor forked from eomap-js. It lets me visually build and edit game maps without needing proprietary tools.
+
+### Community Website (PHP)
+A simple PHP site that serves as the landing page and news hub for the project.
+
+## What I've Learned
+
+This project touches almost every layer of software development:
+- **Networking**: Custom binary protocols, packet serialization, client-server state sync
+- **Databases**: SQLite and MariaDB for persistent world state
+- **Build Systems**: CMake on the server, MSBuild on the client, npm for the map editor
+- **DevOps**: Docker containers for test servers, CI scripts for automated builds
+- **Game Design**: Balancing systems, writing quest logic, designing progression curves
+
+It's the kind of project where you fix a memory leak at 2am and then spend the next hour adding a particle effect because you can't stop tinkering.
+
+## Current State
+
+Actively in development. The server runs stable with a small group of testers, the client is playable but rough around the edges, and I keep a running list of features that grows faster than I can knock them out. It's a hobby — and I like it that way.`,
+        category: 'hobby',
+        created_at: '2025-12-15',
+    },
 ]
 
 export const projects = [
@@ -112,7 +156,6 @@ export const projects = [
         tech: 'Electron, React, Node.js, Styled Components',
         url: 'https://github.com/Caibran/Anomaly',
         created_at: '2026-02-10',
-        startedAt: '2025-11-15',
         progress: 72,
         currentFocus: 'Implementing tab support and syntax highlighting for code blocks',
         goals: [
@@ -130,7 +173,6 @@ export const projects = [
         tech: 'C++, CMake, SQLite, MariaDB, Docker',
         url: 'https://github.com/EO-Resource/EOEngine',
         created_at: '2026-02-08',
-        startedAt: '2025-08-20',
         progress: 45,
         currentFocus: 'Quest system implementation and integration testing',
         goals: [
@@ -139,5 +181,14 @@ export const projects = [
             'Automated CI/CD pipeline for release builds',
             'Web-based admin dashboard',
         ],
+    },
+    {
+        id: 3,
+        title: 'Shards of Eternity',
+        description: 'A hobby MMO built on Endless Online\'s bones — custom C server engine, C# game client, browser-based map editor, and a PHP community site.',
+        status: 'hobby',
+        tech: 'C, C#, MonoGame, JavaScript, PHP, Docker',
+        url: 'https://github.com/Shards-Of-Eternity',
+        created_at: '2025-12-15',
     },
 ]

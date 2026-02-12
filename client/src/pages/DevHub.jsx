@@ -3,12 +3,6 @@ import FadeSection from '../components/FadeSection'
 import Footer from '../components/Footer'
 import { projects } from '../data'
 
-function daysInDev(startedAt) {
-    const start = new Date(startedAt)
-    const now = new Date()
-    return Math.floor((now - start) / (1000 * 60 * 60 * 24))
-}
-
 function ProgressBar({ value }) {
     return (
         <div className="w-full h-2 bg-[var(--color-surface-light)] rounded-full overflow-hidden">
@@ -21,34 +15,23 @@ function ProgressBar({ value }) {
 }
 
 function DevProjectPanel({ project }) {
-    const days = project.startedAt ? daysInDev(project.startedAt) : null
-
     return (
         <div className="devhub-panel bg-[var(--color-surface-card)] border border-white/[0.06] rounded-xl overflow-hidden glow-hover">
-            {/* header strip */}
+            {/* panel header */}
             <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <span className="pulse-dot" />
                     <h2 className="text-xl font-semibold text-white">{project.title}</h2>
                 </div>
-                <div className="flex items-center gap-3">
-                    {days !== null && (
-                        <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-[var(--color-surface-light)] text-[var(--color-text-dim)]">
-                            {days}d in dev
-                        </span>
-                    )}
-                    <span className="text-xs px-2.5 py-1 rounded-full font-mono text-emerald-400 bg-emerald-400/10">
-                        active
-                    </span>
-                </div>
+                <span className="text-xs px-2.5 py-1 rounded-full font-mono text-emerald-400 bg-emerald-400/10">
+                    active
+                </span>
             </div>
 
-            {/* body */}
             <div className="p-6 space-y-6">
-                {/* description */}
                 <p className="text-[var(--color-text-dim)] text-sm leading-relaxed">{project.description}</p>
 
-                {/* tech stack */}
+                {/* tech pills */}
                 {project.tech && (
                     <div className="flex flex-wrap gap-1.5">
                         {project.tech.split(',').map(t => (
@@ -59,8 +42,8 @@ function DevProjectPanel({ project }) {
                     </div>
                 )}
 
-                {/* progress section */}
-                {project.progress !== undefined && (
+                {/* progress */}
+                {project.progress != null && (
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-mono text-[var(--color-text-dim)] uppercase tracking-wider">progress</span>
@@ -70,7 +53,7 @@ function DevProjectPanel({ project }) {
                     </div>
                 )}
 
-                {/* current focus callout */}
+                {/* current focus */}
                 {project.currentFocus && (
                     <div className="bg-[var(--color-surface-light)] border-l-2 border-[var(--color-cyan-glow)] rounded-r-lg px-4 py-3">
                         <span className="text-xs font-mono text-[var(--color-cyan-glow)] uppercase tracking-wider block mb-1">currently working on</span>
@@ -78,8 +61,8 @@ function DevProjectPanel({ project }) {
                     </div>
                 )}
 
-                {/* goals */}
-                {project.goals && project.goals.length > 0 && (
+                {/* roadmap */}
+                {project.goals?.length > 0 && (
                     <div>
                         <span className="text-xs font-mono text-[var(--color-text-dim)] uppercase tracking-wider block mb-3">roadmap</span>
                         <ul className="space-y-2">
@@ -95,7 +78,7 @@ function DevProjectPanel({ project }) {
                     </div>
                 )}
 
-                {/* actions */}
+                {/* github link */}
                 {project.url && (
                     <div className="pt-2 border-t border-white/[0.06]">
                         <a
