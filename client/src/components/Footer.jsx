@@ -9,11 +9,8 @@ export default function Footer() {
                     <a href="https://github.com/Caibran" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-dim)] hover:text-white transition-colors text-sm">
                         GitHub
                     </a>
-                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-dim)] hover:text-white transition-colors text-sm">
+                    <a href="https://ca.linkedin.com/in/brandongundrum" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-dim)] hover:text-white transition-colors text-sm">
                         LinkedIn
-                    </a>
-                    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-dim)] hover:text-white transition-colors text-sm">
-                        Twitter
                     </a>
                 </div>
             </div>

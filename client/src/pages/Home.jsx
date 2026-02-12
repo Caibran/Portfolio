@@ -11,7 +11,7 @@ const sectionIds = ['welcome', 'about', 'casestudy', 'devhub', 'gallery', 'conta
 export default function Home() {
     const latestPost = useMemo(() => posts[0] || null, [])
     const activeProjects = useMemo(() => projects.filter(p => p.status === 'active').slice(0, 3), [])
-    const completedProjects = useMemo(() => projects.filter(p => p.status === 'completed').slice(0, 3), [])
+    const completedProjects = useMemo(() => projects.filter(p => p.status === 'completed' || p.status === 'hobby').slice(0, 3), [])
     const currentSection = useRef(0)
 
     // keyboard arrow scrolling
@@ -189,13 +189,9 @@ export default function Home() {
                                 className="px-5 py-2.5 bg-[var(--color-surface-card)] border border-white/[0.06] rounded-lg text-sm text-[var(--color-text-dim)] hover:text-white hover:border-white/20 transition-colors glow-hover">
                                 GitHub
                             </a>
-                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                            <a href="https://ca.linkedin.com/in/brandongundrum" target="_blank" rel="noopener noreferrer"
                                 className="px-5 py-2.5 bg-[var(--color-surface-card)] border border-white/[0.06] rounded-lg text-sm text-[var(--color-text-dim)] hover:text-white hover:border-white/20 transition-colors glow-hover">
                                 LinkedIn
-                            </a>
-                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-                                className="px-5 py-2.5 bg-[var(--color-surface-card)] border border-white/[0.06] rounded-lg text-sm text-[var(--color-text-dim)] hover:text-white hover:border-white/20 transition-colors glow-hover">
-                                Twitter
                             </a>
                         </div>
                         <Link
