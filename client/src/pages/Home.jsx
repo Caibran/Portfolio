@@ -10,8 +10,8 @@ const sectionIds = ['welcome', 'about', 'casestudy', 'devhub', 'gallery', 'conta
 
 export default function Home() {
     const latestPost = useMemo(() => posts[0] || null, [])
-    const activeProjects = useMemo(() => projects.filter(p => p.status === 'active').slice(0, 3), [])
-    const completedProjects = useMemo(() => projects.filter(p => p.status === 'completed' || p.status === 'hobby').slice(0, 3), [])
+    const activeProjects = useMemo(() => projects.filter(p => p.status.includes('active')).slice(0, 3), [])
+    const completedProjects = useMemo(() => projects.filter(p => p.status.some(s => s === 'completed' || s === 'hobby')).slice(0, 3), [])
     const currentSection = useRef(0)
 
     // keyboard arrow scrolling

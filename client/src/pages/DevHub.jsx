@@ -100,7 +100,7 @@ function DevProjectPanel({ project }) {
 }
 
 export default function DevHub() {
-    const activeProjects = useMemo(() => projects.filter(p => p.status === 'active'), [])
+    const activeProjects = useMemo(() => projects.filter(p => p.status.includes('active')), [])
 
     return (
         <main className="pt-24 pb-8">
