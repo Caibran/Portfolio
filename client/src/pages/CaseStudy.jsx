@@ -13,8 +13,10 @@ export default function CaseStudy() {
         return (
             <main className="pt-24 pb-8 min-h-screen">
                 <div className="max-w-3xl mx-auto px-6 text-center py-20">
-                    <p className="font-mono text-sm text-[var(--color-text-dim)]">post not found</p>
-                    <Link to="/casestudies" className="text-sm text-[var(--color-cyan-glow)] hover:underline mt-4 inline-block">
+                    <p className="text-sm" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
+                        post not found
+                    </p>
+                    <Link to="/casestudies" className="text-sm link-reveal mt-4 inline-block" style={{ color: 'var(--color-accent)' }}>
                         ← back to studies
                     </Link>
                 </div>
@@ -32,29 +34,38 @@ export default function CaseStudy() {
         <main className="pt-24 pb-8">
             <div className="max-w-3xl mx-auto px-6">
                 <FadeSection>
-                    <Link to="/casestudies" className="font-mono text-xs text-[var(--color-text-dim)] hover:text-[var(--color-cyan-glow)] transition-colors">
+                    <Link
+                        to="/casestudies"
+                        className="text-xs link-reveal"
+                        style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}
+                    >
                         ← case studies
                     </Link>
-                    <div className="mt-6 mb-8">
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="text-xs font-mono text-[var(--color-violet-glow)] bg-[var(--color-violet-glow)]/10 px-2 py-0.5 rounded-full">
+                    <div className="mt-8 mb-10">
+                        <div className="flex items-center gap-4 mb-4">
+                            <span
+                                className="text-xs uppercase tracking-wider"
+                                style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}
+                            >
                                 {post.category || 'study'}
                             </span>
-                            <span className="text-xs text-[var(--color-text-dim)]">{date}</span>
+                            <span className="text-xs" style={{ color: 'var(--color-text-faint)' }}>{date}</span>
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight">{post.title}</h1>
+                        <h1 className="text-3xl md:text-4xl font-bold leading-tight" style={{ color: 'var(--color-text)' }}>
+                            {post.title}
+                        </h1>
                     </div>
                 </FadeSection>
 
                 <FadeSection>
                     <div
-                        className="prose-custom"
-                        dangerouslySetInnerHTML={{ __html: marked(post.content || '') }}
+                        className="prose-editorial"
+                        dangerouslySetInnerHTML={{ __html: post.contentHtml || marked(post.content || '') }}
                     />
                 </FadeSection>
 
-                <FadeSection className="mt-16 pt-8 border-t border-white/[0.06]">
-                    <Link to="/casestudies" className="text-sm text-[var(--color-cyan-glow)] hover:underline font-mono">
+                <FadeSection className="mt-16 pt-8" style={{ borderTop: '1px solid var(--color-border-subtle)' }}>
+                    <Link to="/casestudies" className="text-sm link-reveal" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}>
                         ← back to all studies
                     </Link>
                 </FadeSection>

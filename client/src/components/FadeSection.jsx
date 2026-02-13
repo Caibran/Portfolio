@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
+// wraps any section in a scroll-triggered fade-in.
+// uses IntersectionObserver — fires once and sticks.
 export default function FadeSection({ children, className = '', id }) {
     const ref = useRef(null)
     const [visible, setVisible] = useState(false)
@@ -9,8 +11,10 @@ export default function FadeSection({ children, className = '', id }) {
         if (!el) return
 
         const observer = new IntersectionObserver(
-            ([entry]) => setVisible(entry.isIntersecting),
-            { threshold: 0.15 }
+            ([entry]) => {
+                if (entry.isIntersecting) setVisible(true)
+            },
+            { threshold: 0.12 }
         )
 
         observer.observe(el)
@@ -21,7 +25,7 @@ export default function FadeSection({ children, className = '', id }) {
         <section
             id={id}
             ref={ref}
-            className={`fade-section ${visible ? 'visible' : ''} ${className}`}
+            className={`reveal ${visible ? 'visible' : ''} ${className}`}
         >
             {children}
         </section>

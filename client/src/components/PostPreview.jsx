@@ -8,20 +8,23 @@ export default function PostPreview({ post }) {
     })
 
     return (
-        <Link
-            to={`/casestudies/${post.slug}`}
-            className="block bg-[var(--color-surface-card)] border border-white/[0.06] rounded-xl p-5 glow-hover card-shimmer group"
-        >
-            <div className="flex items-center gap-3 mb-3">
-                <span className="text-xs font-mono text-[var(--color-violet-glow)] bg-[var(--color-violet-glow)]/10 px-2 py-0.5 rounded-full">
+        <Link to={`/casestudies/${post.slug}`} className="card-accent block group">
+            <div className="flex items-center gap-3 mb-2">
+                <span
+                    className="text-xs uppercase tracking-wider"
+                    style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}
+                >
                     {post.category || 'study'}
                 </span>
-                <span className="text-xs text-[var(--color-text-dim)]">{date}</span>
+                <span className="text-xs" style={{ color: 'var(--color-text-faint)' }}>{date}</span>
             </div>
-            <h3 className="font-semibold text-white text-base mb-2 group-hover:text-[var(--color-cyan-glow)] transition-colors">
+            <h3
+                className="font-semibold text-base mb-1 transition-colors group-hover:text-[var(--color-accent)]"
+                style={{ color: 'var(--color-text)' }}
+            >
                 {post.title}
             </h3>
-            <p className="text-[var(--color-text-dim)] text-sm leading-relaxed line-clamp-2">
+            <p className="text-sm leading-relaxed line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>
                 {post.excerpt}
             </p>
         </Link>

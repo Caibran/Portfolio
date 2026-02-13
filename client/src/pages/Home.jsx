@@ -1,20 +1,16 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import FadeSection from '../components/FadeSection'
-import PostPreview from '../components/PostPreview'
-import ProjectCard from '../components/ProjectCard'
 import Footer from '../components/Footer'
-import { posts, projects } from '../data'
+import { projects } from '../data'
 
-const sectionIds = ['welcome', 'about', 'casestudy', 'devhub', 'gallery', 'contact']
+const sectionIds = ['identity', 'philosophy', 'flagship', 'secondary', 'explore']
 
 export default function Home() {
-    const latestPost = useMemo(() => posts[0] || null, [])
-    const activeProjects = useMemo(() => projects.filter(p => p.status.includes('active')).slice(0, 3), [])
-    const completedProjects = useMemo(() => projects.filter(p => p.status.some(s => s === 'completed' || s === 'hobby')).slice(0, 3), [])
     const currentSection = useRef(0)
+    const shards = projects.find(p => p.title === 'Shards of Eternity')
+    const anomaly = projects.find(p => p.title === 'Anomaly Editor')
 
-    // keyboard arrow scrolling
     const scrollToSection = useCallback((index) => {
         const clamped = Math.max(0, Math.min(index, sectionIds.length - 1))
         currentSection.current = clamped
@@ -23,10 +19,10 @@ export default function Home() {
 
     useEffect(() => {
         const handler = (e) => {
-            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+            if (e.key === 'ArrowDown') {
                 e.preventDefault()
                 scrollToSection(currentSection.current + 1)
-            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+            } else if (e.key === 'ArrowUp') {
                 e.preventDefault()
                 scrollToSection(currentSection.current - 1)
             }
@@ -36,173 +32,210 @@ export default function Home() {
     }, [scrollToSection])
 
     return (
-        <main className="pt-16">
-            {/* s1: welcome */}
-            <FadeSection id="welcome" className="min-h-[85vh] flex items-center">
-                <div className="max-w-6xl mx-auto px-6 w-full">
-                    <div className="max-w-2xl">
-                        <p className="font-mono text-sm text-[var(--color-cyan-glow)] mb-4 tracking-wider">sys.init()</p>
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-                            Building things<br />
-                            <span className="text-[var(--color-text-dim)]">that matter.</span>
-                        </h1>
-                        <p className="text-lg text-[var(--color-text-dim)] leading-relaxed max-w-lg mb-8">
-                            Web designer, problem solver, and relentless learner.
-                            This is where I document the work, the process, and the lessons.
-                        </p>
-                        <div className="flex items-center gap-4">
-                            <Link
-                                to="/about"
-                                className="px-5 py-2.5 bg-[var(--color-cyan-glow)]/10 text-[var(--color-cyan-glow)] border border-[var(--color-cyan-glow)]/20 rounded-lg text-sm font-medium hover:bg-[var(--color-cyan-glow)]/20 transition-colors"
+        <main className="pt-14">
+            {/* identity — clear positioning, no fluff */}
+            <FadeSection id="identity" className="min-h-[85vh] flex items-center">
+                <div className="max-w-3xl mx-auto px-6 w-full">
+                    <h1 className="text-5xl md:text-6xl font-bold mb-4 leading-tight heading-live" style={{ color: 'var(--color-text)' }}>
+                        Brandon Gundrum
+                    </h1>
+                    <p className="text-lg mb-6" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}>
+                        Systems-oriented Frontend & Full-Stack Engineer
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-8">
+                        {['React', 'C++', 'C#', 'UI Architecture', 'Performance'].map(tag => (
+                            <span
+                                key={tag}
+                                className="px-3 py-1 text-xs"
+                                style={{
+                                    fontFamily: 'var(--font-mono)',
+                                    color: 'var(--color-text-muted)',
+                                    border: '1px solid var(--color-border)',
+                                    borderRadius: '4px',
+                                }}
                             >
-                                About Me
-                            </Link>
-                            <Link
-                                to="/gallery"
-                                className="px-5 py-2.5 text-[var(--color-text-dim)] border border-white/[0.08] rounded-lg text-sm hover:text-white hover:border-white/20 transition-colors"
-                            >
-                                View Work
-                            </Link>
-                        </div>
-                        <p className="font-mono text-xs text-[var(--color-text-dim)] mt-12 tracking-wider">
-                            ↓ scroll or use arrow keys to navigate
-                        </p>
+                                {tag}
+                            </span>
+                        ))}
                     </div>
+                    <p className="leading-relaxed max-w-xl mb-10" style={{ color: 'var(--color-text-muted)' }}>
+                        I build interactive systems from the ground up — from low-level C++ servers to polished
+                        frontend interfaces. Self-taught across design, programming, and systems architecture,
+                        I focus on clarity, performance, and long-term maintainability.
+                    </p>
+                    <div className="flex items-center gap-3">
+                        <a href="#flagship" className="btn-primary" onClick={e => { e.preventDefault(); scrollToSection(2) }}>
+                            View Selected Work
+                        </a>
+                        {/* Resume button — uncomment when PDF is ready:
+                        <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                            Download Resume
+                        </a> */}
+                        <Link to="/about" className="btn-ghost">About Me</Link>
+                    </div>
+                    <p className="text-xs mt-16" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
+                        ↓ scroll or use arrow keys
+                    </p>
                 </div>
             </FadeSection>
 
-            {/* s2: brief about */}
-            <FadeSection id="about" className="py-24">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="grid md:grid-cols-2 gap-12 items-start">
-                        <div>
-                            <span className="font-mono text-xs text-[var(--color-violet-glow)] tracking-widest uppercase">/about</span>
-                            <h2 className="text-3xl font-bold text-white mt-3 mb-6">A brief overview</h2>
-                            <p className="text-[var(--color-text-dim)] leading-relaxed mb-4">
-                                I'm a developer drawn to the intersection of systems programming and creative problem solving.
-                                From game engine internals to full-stack web apps, I care about how things work under the hood.
-                            </p>
-                            <p className="text-[var(--color-text-dim)] leading-relaxed">
-                                Most of my work lives at the boundary between low-level logic and user-facing experience —
-                                building tools that are both powerful and intuitive.
-                            </p>
-                            <Link to="/about" className="inline-block mt-6 text-sm text-[var(--color-cyan-glow)] hover:underline font-mono">
-                                full analysis →
-                            </Link>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            {['C/C++', 'JavaScript', 'React', 'Node.js', 'SQL', 'Python', 'Linux', 'Git'].map(skill => (
-                                <div key={skill} className="bg-[var(--color-surface-card)] border border-white/[0.06] rounded-lg px-4 py-3 text-center">
-                                    <span className="text-sm text-white font-medium">{skill}</span>
-                                </div>
+            {/* engineering philosophy — bullet principles */}
+            <FadeSection id="philosophy" className="py-24">
+                <div className="max-w-3xl mx-auto px-6">
+                    <span className="text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}>
+                        Philosophy
+                    </span>
+                    <h2 className="text-3xl font-bold mt-2 mb-10 heading-live" style={{ color: 'var(--color-text)' }}>
+                        How I Build
+                    </h2>
+                    <div style={{ borderLeft: '2px solid var(--color-accent)', paddingLeft: '1.5rem' }}>
+                        <ul className="space-y-4">
+                            {[
+                                'Understand the system before abstracting it.',
+                                'Prefer build-time solutions over runtime overhead.',
+                                'Optimize for maintainability, not cleverness.',
+                                'Document decisions, not just outcomes.',
+                                'Ship small iterations, improve continuously.',
+                            ].map((principle, i) => (
+                                <li key={i} className="leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                                    {principle}
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     </div>
                 </div>
             </FadeSection>
 
-            {/* s3: latest case study */}
-            <FadeSection id="casestudy" className="py-24">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="flex items-end justify-between mb-8">
-                        <div>
-                            <span className="font-mono text-xs text-[var(--color-violet-glow)] tracking-widest uppercase">/case-studies</span>
-                            <h2 className="text-3xl font-bold text-white mt-3">Latest Study</h2>
-                        </div>
-                        <Link to="/casestudies" className="text-sm text-[var(--color-cyan-glow)] hover:underline font-mono hidden md:block">
-                            all studies →
-                        </Link>
-                    </div>
-                    {latestPost ? (
-                        <PostPreview post={latestPost} />
-                    ) : (
-                        <div className="bg-[var(--color-surface-card)] border border-white/[0.06] rounded-xl p-8 text-center">
-                            <p className="text-[var(--color-text-dim)] text-sm font-mono">no posts yet — check back soon</p>
-                        </div>
-                    )}
-                    <Link to="/casestudies" className="block mt-4 text-sm text-[var(--color-cyan-glow)] hover:underline font-mono md:hidden">
-                        all studies →
-                    </Link>
-                </div>
-            </FadeSection>
-
-            {/* s4: in development */}
-            <FadeSection id="devhub" className="py-24">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="flex items-end justify-between mb-8">
-                        <div>
-                            <span className="font-mono text-xs text-[var(--color-violet-glow)] tracking-widest uppercase">/dev-hub</span>
-                            <h2 className="text-3xl font-bold text-white mt-3">In Development</h2>
-                        </div>
-                        <Link to="/devhub" className="text-sm text-[var(--color-cyan-glow)] hover:underline font-mono hidden md:block">
-                            view all →
-                        </Link>
-                    </div>
-                    {activeProjects.length ? (
-                        <div className="grid md:grid-cols-3 gap-4">
-                            {activeProjects.map(p => <ProjectCard key={p.id} project={p} />)}
-                        </div>
-                    ) : (
-                        <div className="bg-[var(--color-surface-card)] border border-white/[0.06] rounded-xl p-8 text-center">
-                            <p className="text-[var(--color-text-dim)] text-sm font-mono">loading projects...</p>
-                        </div>
-                    )}
-                </div>
-            </FadeSection>
-
-            {/* s5: project gallery */}
-            <FadeSection id="gallery" className="py-24">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="flex items-end justify-between mb-8">
-                        <div>
-                            <span className="font-mono text-xs text-[var(--color-violet-glow)] tracking-widest uppercase">/gallery</span>
-                            <h2 className="text-3xl font-bold text-white mt-3">Recent Work</h2>
-                        </div>
-                        <Link to="/gallery" className="text-sm text-[var(--color-cyan-glow)] hover:underline font-mono hidden md:block">
-                            full gallery →
-                        </Link>
-                    </div>
-                    {completedProjects.length ? (
-                        <div className="grid md:grid-cols-3 gap-4">
-                            {completedProjects.map(p => <ProjectCard key={p.id} project={p} />)}
-                        </div>
-                    ) : (
-                        <div className="bg-[var(--color-surface-card)] border border-white/[0.06] rounded-xl p-8 text-center">
-                            <p className="text-[var(--color-text-dim)] text-sm font-mono">loading gallery...</p>
-                        </div>
-                    )}
-                </div>
-            </FadeSection>
-
-            {/* s6: communication hub */}
-            <FadeSection id="contact" className="py-24">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="max-w-2xl mx-auto text-center">
-                        <span className="font-mono text-xs text-[var(--color-violet-glow)] tracking-widest uppercase">/comms</span>
-                        <h2 className="text-3xl font-bold text-white mt-3 mb-6">Let's Connect</h2>
-                        <p className="text-[var(--color-text-dim)] leading-relaxed mb-8">
-                            I'm always interested in hearing about new projects, collaborations, or just
-                            chatting about tech. Reach out through any of the channels below.
-                        </p>
-                        <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
-                            <a href="https://github.com/Caibran" target="_blank" rel="noopener noreferrer"
-                                className="px-5 py-2.5 bg-[var(--color-surface-card)] border border-white/[0.06] rounded-lg text-sm text-[var(--color-text-dim)] hover:text-white hover:border-white/20 transition-colors glow-hover">
-                                GitHub
-                            </a>
-                            <a href="https://ca.linkedin.com/in/brandongundrum" target="_blank" rel="noopener noreferrer"
-                                className="px-5 py-2.5 bg-[var(--color-surface-card)] border border-white/[0.06] rounded-lg text-sm text-[var(--color-text-dim)] hover:text-white hover:border-white/20 transition-colors glow-hover">
-                                LinkedIn
-                            </a>
-                        </div>
+            {/* flagship project — Shards of Eternity */}
+            <FadeSection id="flagship" className="py-24">
+                <div className="max-w-3xl mx-auto px-6">
+                    <span className="text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}>
+                        Selected Work
+                    </span>
+                    <h2 className="text-3xl font-bold mt-2 mb-2 heading-live" style={{ color: 'var(--color-text)' }}>
+                        {shards?.title || 'Shards of Eternity'}
+                    </h2>
+                    <p className="text-sm mb-8" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
+                        Multiplayer MMO — C server · C# client · SQL backend
+                    </p>
+                    <p className="leading-relaxed mb-8" style={{ color: 'var(--color-text-muted)' }}>
+                        A long-running multiplayer game built on a forked server/client foundation and extensively
+                        expanded with custom systems, database features, and gameplay mechanics. Designed and
+                        maintained as a full-stack multiplayer system across four repositories.
+                    </p>
+                    <ul className="space-y-3 mb-8">
+                        {[
+                            'Custom server-side gameplay systems in C++',
+                            'Database schema design, migration, and persistence layers',
+                            'Client modifications and UI rendering in C#',
+                            'Custom binary protocol and packet serialization',
+                            'Multi-repository architecture across four languages',
+                        ].map((item, i) => (
+                            <li key={i} className="flex items-start gap-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                                <span style={{ color: 'var(--color-accent)', flexShrink: 0, marginTop: '2px' }}>▸</span>
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="flex items-center gap-4">
                         <Link
-                            to="/contact"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-cyan-glow)]/10 text-[var(--color-cyan-glow)] border border-[var(--color-cyan-glow)]/20 rounded-lg text-sm font-medium hover:bg-[var(--color-cyan-glow)]/20 transition-colors"
+                            to="/gallery/3"
+                            className="text-sm link-reveal"
+                            style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}
                         >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.5-9.75-6.5" />
-                            </svg>
-                            Send a Message
+                            deep dive →
                         </Link>
+                        {shards?.url && (
+                            <a
+                                href={shards.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm link-reveal"
+                                style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}
+                            >
+                                github →
+                            </a>
+                        )}
+                    </div>
+                </div>
+            </FadeSection>
+
+            {/* secondary project — Anomaly Editor */}
+            <FadeSection id="secondary" className="py-24">
+                <div className="max-w-3xl mx-auto px-6">
+                    <span className="text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}>
+                        Selected Work
+                    </span>
+                    <h2 className="text-3xl font-bold mt-2 mb-2 heading-live" style={{ color: 'var(--color-text)' }}>
+                        {anomaly?.title || 'Anomaly Editor'}
+                    </h2>
+                    <p className="text-sm mb-8" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
+                        Electron · React · Cross-Platform Desktop App
+                    </p>
+                    <p className="leading-relaxed mb-8" style={{ color: 'var(--color-text-muted)' }}>
+                        A cross-platform markdown editor built to explore Electron's IPC architecture, file system
+                        bridging, and desktop distribution pipelines. Focused on speed and minimal dependency footprint.
+                    </p>
+                    <ul className="space-y-3 mb-8">
+                        {[
+                            'IPC-based file system bridge through preload security boundary',
+                            'Debounced autosave with beforeunload safety flush',
+                            'Live markdown preview with syntax highlighting',
+                            'Single-command build pipeline for 3 platforms',
+                        ].map((item, i) => (
+                            <li key={i} className="flex items-start gap-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                                <span style={{ color: 'var(--color-accent)', flexShrink: 0, marginTop: '2px' }}>▸</span>
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="flex items-center gap-4">
+                        <Link
+                            to="/gallery/1"
+                            className="text-sm link-reveal"
+                            style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}
+                        >
+                            deep dive →
+                        </Link>
+                        {anomaly?.url && (
+                            <a
+                                href={anomaly.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm link-reveal"
+                                style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}
+                            >
+                                github →
+                            </a>
+                        )}
+                    </div>
+                </div>
+            </FadeSection>
+
+            {/* explore the system */}
+            <FadeSection id="explore" className="py-24">
+                <div className="max-w-3xl mx-auto px-6">
+                    <div className="max-w-lg mx-auto text-center">
+                        <span className="text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}>
+                            Under the Hood
+                        </span>
+                        <h2 className="text-3xl font-bold mt-2 mb-6 heading-live" style={{ color: 'var(--color-text)' }}>
+                            Explore the System
+                        </h2>
+                        <p className="leading-relaxed mb-8" style={{ color: 'var(--color-text-muted)' }}>
+                            This portfolio is itself a case study — explicit architecture, minimal dependencies,
+                            measurable performance, and documented tradeoffs. See how it's built.
+                        </p>
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                            <Link to="/system" className="btn-primary">View Architecture</Link>
+                            <Link to="/" className="btn-ghost">Open Terminal</Link>
+                        </div>
+                        <p className="text-xs mt-6" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
+                            More work available in{' '}
+                            <Link to="/gallery" className="link-reveal" style={{ color: 'var(--color-text-faint)' }}>Gallery</Link>
+                            {' '}and{' '}
+                            <Link to="/casestudies" className="link-reveal" style={{ color: 'var(--color-text-faint)' }}>Case Studies</Link>
+                        </p>
                     </div>
                 </div>
             </FadeSection>

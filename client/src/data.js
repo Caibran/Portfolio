@@ -1,58 +1,57 @@
-// Static data for posts + projects (no backend needed for GH Pages)
+// Static data — no backend, no runtime overhead.
 
 export const posts = [
     {
         id: 1,
         title: 'Building Anomaly — A Cross-Platform Markdown Editor',
         slug: 'building-anomaly-editor',
-        excerpt: 'The story behind Anomaly — a cross-platform markdown editor I built with Electron and React because every other option was either ugly or bloated.',
-        content: `## The Idea
+        excerpt: 'Designing a cross-platform markdown editor with Electron and React — file system bridging, autosave architecture, and distribution pipelines.',
+        content: `## The Problem
 
-I wanted a markdown editor that felt native, looked modern, and stayed out of the way. Most editors I'd tried were either bloated with features I didn't need or looked like they were designed in 2012. So I built my own.
+Every markdown editor I tried was either bloated with features or visually outdated. I needed something focused: native feel, modern UI, no unnecessary overhead. So I built one.
 
-## The Hard Part: Bridging Main and Renderer
+## Architecture: Main ↔ Renderer Bridge
 
-The trickiest commit in the whole project was getting the file system bridge right. Electron's security model means the renderer process (React) can't touch the file system directly — everything has to go through \`preload.js\` using \`contextBridge\`. 
+The critical challenge was the file system bridge. Electron's security model requires all FS operations to go through \`preload.js\` using \`contextBridge\`. The renderer process (React) never touches the file system directly.
 
-The problem is that file operations are async, error-prone, and the renderer needs to handle states like "file doesn't exist anymore" or "directory was just deleted." I ended up building a channel-based API in \`preload.js\` that exposes a clean interface:
+I built a channel-based API that exposes a clean interface:
 
 \`\`\`js
 contextBridge.exposeInMainWorld('electronAPI', {
     readDir: (dirPath) => ipcRenderer.invoke('read-dir', dirPath),
     readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
     writeFile: (filePath, content) => ipcRenderer.invoke('write-file', filePath, content),
-    // ...
 })
 \`\`\`
 
-Then the main process registers handlers for each channel. Sounds simple, but the gotcha is error propagation — if the main process throws during a file read, you need to catch it cleanly in the renderer without crashing the whole app. Took a few iterations to get the error boundaries right.
+The main process registers handlers for each channel. Error propagation was the hardest part — if the main process throws during a file read, it needs to resolve cleanly in the renderer without crashing the application. This required explicit error boundaries at every IPC boundary.
 
-## Autosave
+## Autosave Strategy
 
-Autosave was another rabbit hole. The naive approach (save on every keystroke) hammers the disk and causes lag on large files. I ended up with a debounced save — waits 800ms after the last keystroke, then writes. But then you have the edge case: what if the user closes the window during the debounce? So there's also a \`beforeunload\` handler that forces a synchronous flush.
+The naive approach (save on every keystroke) causes disk thrashing and lag on large files. I implemented debounced persistence — 800ms after the last keystroke, then write. Edge case: window close during debounce. Solution: a \`beforeunload\` handler that forces synchronous flush.
 
-## Distribution Pipeline
+## Distribution
 
-One of the goals was making distribution painless. The build pipeline (\`npm run build-dist\`) handles the full flow — compiling the React app, packaging it with Electron, and creating a ZIP for portable distribution. Cross-platform was important from day one; the same codebase produces builds for Windows, macOS, and Linux.
+The build pipeline (\`npm run build-dist\`) compiles React, packages with Electron, and produces distributable ZIPs for Windows, macOS, and Linux in one step. Cross-platform from day one.
 
-## Thoughts
+## Takeaway
 
-Building Anomaly taught me a lot about making web tech feel native. Electron gets a bad rap for memory usage, but if you keep things focused and don't pull in a million dependencies, it runs fine. The app opens fast and doesn't eat my RAM — that's good enough for me.`,
+Building Anomaly reinforced that Electron performs well when you keep dependencies minimal and architecture explicit. The app opens fast because it doesn't load what it doesn't need.`,
         category: 'development',
         created_at: '2026-02-10',
     },
     {
         id: 2,
-        title: 'Implementing a Quest Rule Engine from Scratch',
+        title: 'Implementing a Quest Rule Engine in C++',
         slug: 'eoengine-quest-system',
-        excerpt: 'How I added a full quest system to EOEngine — condition checking, INI-driven config, and the joy of debugging state machines in C++.',
-        content: `## The Problem
+        excerpt: 'Adding a full quest condition system to EOEngine — INI-driven configuration, state machine evaluation, and async data lookups without blocking the game loop.',
+        content: `## Context
 
-EOEngine inherited a partially-built quest framework, but most of the rule checks were stubbed out. You could define quests in INI files, but the engine couldn't actually verify things like "has the player cleared this instance?" or "is it between 6pm and midnight server time?" The quest actions and conditions existed on paper but not in code.
+EOEngine inherited a partially-built quest framework. Quest definitions existed in INI files, but the engine couldn't verify runtime conditions — instance completion, time restrictions, party state. The rule evaluation layer was stubbed out.
 
-## How Quests Work
+## Quest Architecture
 
-Quests in EOEngine are defined in \`.eqf\` files — a simple INI-like format. Each quest has a chain of states, and each state has rules (conditions to check) and actions (things to do when conditions are met). The engine evaluates rules on certain triggers — talking to an NPC, killing a mob, entering a map — and advances the quest state when everything checks out.
+Quests are defined in \`.eqf\` files (INI format). Each quest has a chain of states, and each state has rules (conditions) and actions (effects). The engine evaluates rules on triggers — NPC interaction, mob kill, map entry — and advances state when conditions are met.
 
 \`\`\`ini
 [State 1]
@@ -62,81 +61,71 @@ Action = GiveExp 500
 Action = SetState 2
 \`\`\`
 
-## The Commit
+## Implementation
 
-The big commit added a dozen missing rule implementations. Each rule is a condition check — simple in isolation, but they compose in complex ways. Some highlights:
+The commit added twelve missing rule implementations. Each is a condition check — simple in isolation, complex when composed:
 
-**RuleInstanceCleared** — checks if the player has completed a specific dungeon instance. This required hooking into the instancing system to query completion records from the database, which meant touching \`character.hpp\`, \`world.cpp\`, and the SQLite layer.
+**RuleInstanceCleared** — Queries the instancing system's completion records from the database. Required changes across \`character.hpp\`, \`world.cpp\`, and the SQLite layer.
 
-**RuleTimeRestriction** — gates quests by server time. Sounds trivial, but you have to handle day boundaries (what if the window is 10pm-2am?) and decide whether to use server time or player-local time. Went with server time to prevent timezone exploits.
+**RuleTimeRestriction** — Gates quests by server time. Handles day-boundary windows (10pm–2am spans). Uses server time exclusively to prevent timezone exploits.
 
-**RulePartySize** — checks if the player's party meets size requirements. The tricky part was handling edge cases: what if someone leaves the party between the rule check and the action execution? Added a revalidation step in the action handler.
+**RulePartySize** — Validates party composition. Added revalidation between rule check and action execution to handle mid-evaluation party changes.
 
-## What Made It Hard
+## Technical Challenge
 
-The existing codebase used a pattern where rule checks returned a simple bool, but some rules needed to check against dynamic data (database queries, other player states). I had to extend the rule evaluation to support async-ish lookups without blocking the game loop. Ended up using a two-pass approach: first pass gathers required data, second pass evaluates conditions.
+The existing codebase returned simple booleans from rule checks, but some rules required database queries and cross-entity state lookups. I implemented a two-pass evaluation: first pass gathers required data, second pass evaluates conditions. This prevents blocking the game loop on async lookups.
 
-## Thoughts
+## Takeaway
 
-Quest systems look simple from the player side but they're basically state machines with side effects. Every edge case you don't handle becomes a bug report from someone who found a way to sequence-break your carefully designed dungeon. The INI-driven approach is great for content creators, though — non-programmers can write quests without touching C++.`,
-        category: 'open-source',
+Quest systems are state machines with side effects. The INI-driven approach separates content from code — non-programmers can define quests without touching C++.`,
+        category: 'systems',
         created_at: '2026-02-08',
     },
     {
         id: 3,
-        title: 'Shards of Eternity — Building an MMO from Scratch',
+        title: 'Shards of Eternity — Full-Stack Multiplayer Architecture',
         slug: 'shards-of-eternity',
-        excerpt: 'A hobby MMO project built on top of Endless Online\'s architecture — custom server engine in C, a C# game client, interactive map tooling, and a PHP community site.',
-        content: `## How It Started
+        excerpt: 'A multi-repository MMO project spanning C server, C# client, JavaScript tooling, and PHP web — covering networking, persistence, and client-server synchronization.',
+        content: `## Overview
 
-I grew up playing Endless Online, one of those tiny 2D MMOs that somehow had a massive community. When the official servers went quiet, I wanted to keep that experience alive — but on my own terms. Not just running someone else's server, but actually understanding the full stack and building something new on top of it.
+Shards of Eternity is a multiplayer online game built across four repositories, each handling a different layer of the system. It started as an interest in understanding how multiplayer architecture works end-to-end, and grew into a long-running project covering networking, persistence, client rendering, and content tooling.
 
-That's how Shards of Eternity started. It's a hobby project, and I'm not pretending otherwise — but it's taught me more about real-world distributed systems than any course ever could.
+## Architecture
 
-## The Stack
+### Server — Eternity Engine (C)
+Forked from Etheos. Handles core game logic: player connections, world state, combat resolution, NPC behavior, item systems, map transitions. Extended with custom packet handlers, quest engines, instancing, buff systems, and shrine discovery. All configuration is INI-driven for content separation.
 
-The project spans four repositories, each handling a different piece of the puzzle:
+### Client — SOE_Client (C# / MonoGame)
+Forked from EndlessClient. Renders the 2D game world and processes player input. Custom additions include floating combat text, health bars, buff notification HUDs with procedurally-generated icons, and fullscreen support with coordinate transformation.
 
-### Eternity Engine (Server)
-A C-based game server forked from Etheos. It handles all the core game logic — player movement, combat, NPCs, item systems, map transitions, the works. I've been extending it with custom features like buff systems, quest engines, shrine discovery, and instancing. It's not glamorous work, but digging through thousands of lines of C to add new packet handlers is genuinely fun.
+### Map Editor — SOE_MapJS (JavaScript)
+Browser-based map editor for visual level design — tiles, walls, NPC spawns, warp zones. Eliminates dependency on proprietary tools.
 
-### Game Client (C#)
-Forked from EndlessClient, the client is built in C# with MonoGame. I've been adding things like floating combat text, health bars, buff notification HUDs, and fullscreen support. It's the part players actually see, so I spend a lot of time tweaking animations and making the UI feel responsive.
+### Community Site — SOE_Website (PHP)
+Player registration, server status, and news distribution.
 
-### Map Editor (JavaScript)
-An interactive browser-based map editor forked from eomap-js. It lets me visually build and edit game maps without needing proprietary tools.
+## Key Systems Built
 
-### Community Website (PHP)
-A simple PHP site that serves as the landing page and news hub for the project.
+**Buff System** — Server-side stat modifiers with binary protocol extensions. Client renders active buffs as procedurally-generated hexagonal icons with countdown timers synchronized to server-authoritative durations.
 
-## The Buff System — A Real Example
+**Quest Engine** — INI-driven state machine with condition checking, reward distribution, and twelve rule types covering instance completion, time restrictions, party validation, and inventory state.
 
-One of the more involved features was the buff notification HUD. The server sends buff data as part of custom packet extensions — things like stat multipliers, durations, effect types. But the client had no way to display any of it.
+**Instancing** — Party-based dungeon instances with cooldowns, disconnect abuse detection, and security revalidation between state transitions.
 
-I had to:
-1. Parse the buff packets from the server's binary protocol
-2. Build a notification panel that renders active buffs as procedurally-generated hexagonal icons
-3. Add countdown timers that tick down in real-time and handle expiration
-4. Color-code buffs by type (stat boost, regen, damage modifier)
-5. Later extend the same system to support spell-cast buffs, not just potion buffs
+**Shrine Discovery** — Per-player exploration tracking with database persistence. Players discover teleport locations through exploration, earning experience rewards.
 
-The hardest part was getting the hex icon rendering right — generating the shapes procedurally instead of using sprite assets — and syncing the client-side timers with the server's authoritative buff duration.
+## Technical Domains Covered
 
-## What I've Learned
-
-This project touches almost every layer of software development:
-- **Networking**: Custom binary protocols, packet serialization, client-server state sync
-- **Databases**: SQLite and MariaDB for persistent world state
-- **Build Systems**: CMake on the server, MSBuild on the client, npm for the map editor
-- **DevOps**: Docker containers for test servers, CI scripts for automated builds
-- **Game Design**: Balancing systems, writing quest logic, designing progression curves
-
-It's the kind of project where you fix a memory leak at 2am and then spend the next hour adding a particle effect because you can't stop tinkering.
+- Custom binary protocol design and packet serialization
+- Client-server state synchronization
+- SQLite and MariaDB persistence layers
+- CMake build systems (server), MSBuild (client), npm (tooling)
+- Docker containerization for test deployment
 
 ## Current State
 
-Actively in development. The server runs stable with a small group of testers, the client is playable but rough around the edges, and I keep a running list of features that grows faster than I can knock them out. It's a hobby — and I like it that way.`,
-        category: 'hobby',
+Actively maintained. Server runs stable under load testing. Client is functional with ongoing UI improvements. Feature development continues.`,
+        category: 'systems',
         created_at: '2025-12-15',
     },
 ]
@@ -145,33 +134,35 @@ export const projects = [
     {
         id: 1,
         title: 'Anomaly Editor',
-        description: 'Cross-platform Markdown editor with dark theme, live preview, file explorer sidebar, and autosave. Electron + React.',
+        description: 'Cross-platform Markdown editor with dark theme, live preview, integrated file explorer, and debounced autosave. Built with Electron and React.',
         status: ['active'],
         tech: 'Electron, React, Node.js, Styled Components',
         url: 'https://github.com/Caibran/Anomaly',
         created_at: '2026-02-10',
+        lastUpdated: '2026-02-10',
         progress: 72,
-        currentFocus: 'Implementing tab support and syntax highlighting for code blocks',
+        currentFocus: 'Tab support and syntax-highlighted code fences',
+        why: 'Built to explore cross-platform UI architecture, IPC bridging, and markdown rendering workflows.',
         goals: [
             'Multi-tab editing with drag-and-drop reorder',
             'Syntax-highlighted code fences in preview',
             'Export to PDF and HTML',
             'Plugin system for custom markdown extensions',
         ],
-        detail: `A modern, dark-themed Markdown editor designed to feel native without the weight of a full IDE.
+        detail: `A focused Markdown editor designed for speed and simplicity. No IDE overhead — just writing.
 
 ## Key Features
 
-- **Dark Theme** — Built from the ground up, not a bolt-on dark mode. Every color is intentional.
-- **Integrated File Explorer** — Browse and manage your file structure in a sidebar, VS Code-style.
-- **Live Preview** — Write markdown on one side, see rendered output on the other in real-time.
-- **Autosave** — Changes are debounced and persisted automatically. Never lose work.
-- **Cross-Platform** — Single codebase produces builds for Windows, macOS, and Linux.
-- **Portable** — Windows version runs from a ZIP — no install required.
+- **Dark Theme** — Designed from scratch, not a bolt-on dark mode
+- **Integrated File Explorer** — Sidebar file tree, VS Code-style
+- **Live Preview** — Write markdown, see rendered output in real-time
+- **Autosave** — Debounced persistence with beforeunload safety flush
+- **Cross-Platform** — Single codebase produces Windows, macOS, and Linux builds
+- **Portable** — Windows version runs from a ZIP, no install required
 
-## How It's Built
+## Architecture
 
-The frontend uses **React 19** with **Styled Components** for scoped styling. **React Markdown** handles live preview rendering. The Electron main process handles all file system operations through a \`preload.js\` bridge using \`contextBridge\` and IPC channels.
+Frontend: **React 19** with **Styled Components** for scoped styling. **React Markdown** handles live preview rendering. Electron main process handles all file system operations through a \`preload.js\` bridge using \`contextBridge\` and IPC channels.
 
 \`\`\`
 anomaly/
@@ -182,35 +173,37 @@ anomaly/
 └── scripts/          # Build & packaging scripts
 \`\`\`
 
-The build pipeline (\`npm run build-dist\`) compiles React, packages with Electron, and creates distributable ZIPs in one step.`,
+Build pipeline (\`npm run build-dist\`) compiles React, packages with Electron, and creates distributable ZIPs in one step.`,
     },
     {
         id: 2,
         title: 'EOEngine',
-        description: 'Modern C++ server emulator for Endless Online. Cross-platform builds, Docker support, SQLite/MariaDB backends.',
-        status: ['active', 'hobby'],
+        description: 'Community-maintained C++ server emulator for Endless Online. Cross-platform builds, Docker support, SQLite and MariaDB backends.',
+        status: ['active'],
         tech: 'C++, CMake, SQLite, MariaDB, Docker',
         url: 'https://github.com/EO-Resource/EOEngine',
         created_at: '2026-02-08',
+        lastUpdated: '2026-02-08',
         progress: 45,
-        currentFocus: 'Quest system implementation and integration testing',
+        currentFocus: 'Quest system integration testing and guild implementation',
+        why: 'Built to provide an accessible, well-documented server platform for the Endless Online community.',
         goals: [
             'Complete quest rule engine with all condition types',
             'Guild system with ranks and permissions',
             'Automated CI/CD pipeline for release builds',
             'Web-based admin dashboard',
         ],
-        detail: `A community-maintained, modern fork of Etheos — a high-performance Endless Online server emulator. Built for accessibility, customization, and ongoing maintenance.
+        detail: `A modern fork of Etheos — a high-performance Endless Online server emulator. Focused on accessibility, customization, and ongoing maintenance.
 
-## What It Does
+## Purpose
 
-EOEngine emulates the server side of Endless Online, handling everything from player connections and world state to combat, quests, NPCs, and item systems. It supports multiple database backends (SQLite, MariaDB) and runs on both Windows and Linux.
+EOEngine emulates the server side of Endless Online, handling player connections, world state, combat, quests, NPCs, and item systems. Supports multiple database backends (SQLite, MariaDB) and runs on both Windows and Linux.
 
-## Key Objectives
+## Design Objectives
 
-- **Accessibility** — Make it easier for hobbyists and developers to host their own EO servers
-- **Customization** — Extensive INI-driven configuration, plugin hooks, new features beyond vanilla
-- **Community-Centric** — Open contributions, shared learning, module support
+- **Accessibility** — Lower the barrier for hobbyists and developers to run private servers
+- **Customization** — INI-driven configuration, plugin hooks, features beyond vanilla
+- **Community-Centric** — Open contributions, shared tooling, module support
 - **Ongoing Maintenance** — Regular updates, modern C++ practices, stable releases
 
 ## Building
@@ -225,49 +218,51 @@ sudo ./scripts/install-deps.sh
 .\\build-windows.ps1 -SqlServer ON -MariaDB ON -Sqlite ON
 \`\`\`
 
-## Tech Stack
+## Tech Profile
 
-93.6% C++, with supporting infrastructure in CMake, Shell, PowerShell, and Python. Includes Docker support for quick deployment and integration testing via EOBot.
-
-## Heritage
-
-EOEngine traces its lineage through years of open-source work: EOServ → EOSource → Etheos → EOEngine. Each generation built on the last, and this fork continues that tradition with a focus on community involvement.`,
+93.6% C++, with supporting infrastructure in CMake, Shell, PowerShell, and Python. Docker support for quick deployment and integration testing.`,
     },
     {
         id: 3,
         title: 'Shards of Eternity',
-        description: 'A hobby MMO built on Endless Online\'s bones — custom C server engine, C# game client, browser-based map editor, and a PHP community site.',
-        status: ['hobby'],
+        description: 'Multi-repository multiplayer game — C server engine, C# game client, JavaScript map editor, PHP community site. Custom networking, persistence, and gameplay systems.',
+        status: ['active'],
         tech: 'C, C#, MonoGame, JavaScript, PHP, Docker',
         url: 'https://github.com/Shards-Of-Eternity',
         created_at: '2025-12-15',
+        lastUpdated: '2026-02-12',
         youtube: 'https://www.youtube.com/watch?v=fuW5jYka7_U',
-        detail: `A hobby MMO project built on top of Endless Online's architecture. Four repositories spanning four languages — because why not.
+        why: 'Built to understand multiplayer architecture, client-server synchronization, and long-running system maintenance.',
+        detail: `A multiplayer online game spanning four repositories and four languages. Designed and maintained as a full-stack multiplayer system.
 
-## The Stack
+## Architecture
 
 ### Eternity Engine — Game Server (C)
-Forked from Etheos. Handles all core game logic: player movement, combat, NPCs, items, map transitions, quests, instancing, buff systems, and shrine discovery. Extended with custom packet handlers and INI-driven configuration for content.
+Core game logic: player movement, combat, NPCs, items, map transitions, quests, instancing, buff systems, shrine discovery. Extended with custom packet handlers and INI-driven configuration.
 
 ### Game Client — SOE_Client (C# / MonoGame)
-Forked from EndlessClient. Renders the 2D game world and handles player input. Custom additions include floating combat text, health bars, buff notification HUDs with procedurally-generated hex icons, and fullscreen support.
+2D game renderer with player input handling. Custom additions: floating combat text, health bars, buff notification HUD with procedurally-generated hex icons, fullscreen with coordinate transformation.
 
 ### Interactive Map Editor — SOE_MapJS (JavaScript)
-A browser-based map editor forked from eomap-js. Used to visually build and edit game maps — tiles, walls, NPC spawns, warp zones — without proprietary tools.
+Browser-based level design tool. Visual editing of tiles, walls, NPC spawns, warp zones.
 
 ### Community Website — SOE_Website (PHP)
-Landing page and news hub for the project. Handles player registration and server status.
+Player registration, server status, news hub.
 
-## What I've Built
+## Systems Built
 
-- **Buff System** — Server-side stat modifiers with client HUD rendering, countdown timers, and procedural hex icons
-- **Quest Engine** — INI-driven quest system with state machines, condition checking, and reward distribution
-- **Instancing** — Party-based dungeon instances with cooldowns, security checks, and disconnect abuse prevention
-- **Shrine Discovery** — Exploration-based teleport system with per-player discovery tracking and EXP rewards
-- **Combat Text** — Floating damage numbers with glow effects and right-offset rendering to avoid overlapping health bars
+- **Buff System** — Server-side stat modifiers with binary protocol extensions, client-side countdown rendering, procedural icon generation
+- **Quest Engine** — INI-driven state machine with 12 rule types, database-backed condition checking
+- **Instancing** — Party-based dungeon instances with cooldowns, security revalidation, disconnect abuse prevention
+- **Shrine Discovery** — Per-player exploration tracking, database persistence, EXP rewards
+- **Combat Text** — Floating damage numbers with glow rendering, offset to avoid UI overlap
 
-## Current State
+## Technical Domains
 
-Actively in development with a small group of testers. The server runs stable, the client is playable, and the feature list grows faster than I can knock it out.`,
+- Custom binary protocol, packet serialization
+- Client-server state sync
+- SQLite / MariaDB persistence
+- CMake, MSBuild, npm build systems
+- Docker containerization`,
     },
 ]
