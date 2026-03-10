@@ -19,25 +19,75 @@ function daysAgo(dateStr) {
     return `${days} days ago`
 }
 
+function getStatusInfo(status) {
+    if (status.includes('on-hold')) return { dotClass: 'on-hold', label: 'on hold' }
+    if (status.includes('active')) return { dotClass: 'active', label: 'active' }
+    if (status.includes('hobby')) return { dotClass: 'hobby', label: 'hobby' }
+    return { dotClass: 'active', label: 'active' }
+}
+
 function DevProjectPanel({ project }) {
+    const statusInfo = getStatusInfo(project.status)
+    const isOnHold = project.status.includes('on-hold')
+    const isHobby = project.status.includes('hobby') && !project.status.includes('active')
+
     return (
-        <div className="card-panel">
+        <div className={`card-panel ${isOnHold ? 'card-panel--dimmed' : ''}`}>
             {/* header row */}
             <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-3">
-                    <span className="status-dot active" />
-                    <h2 className="text-xl font-semibold" style={{ color: 'var(--color-text)' }}>{project.title}</h2>
+                    <span className={`status-dot ${statusInfo.dotClass}`} />
+                    <h2 className="text-xl font-semibold" style={{ color: isOnHold ? 'var(--color-text-muted)' : 'var(--color-text)' }}>
+                        {project.title}
+                    </h2>
                 </div>
-                <span
-                    className="text-xs"
-                    style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}
-                >
-                    active
-                </span>
+                <div className="flex items-center gap-2">
+                    {project.status.includes('hobby') && (
+                        <span
+                            className="text-xs px-2 py-0.5 rounded-full"
+                            style={{
+                                fontFamily: 'var(--font-mono)',
+                                background: 'rgba(251, 191, 36, 0.1)',
+                                color: '#fbbf24',
+                                border: '1px solid rgba(251, 191, 36, 0.2)',
+                            }}
+                        >
+                            hobby project
+                        </span>
+                    )}
+                    {isOnHold && (
+                        <span
+                            className="text-xs px-2 py-0.5 rounded-full"
+                            style={{
+                                fontFamily: 'var(--font-mono)',
+                                background: 'rgba(251, 146, 60, 0.1)',
+                                color: '#fb923c',
+                                border: '1px solid rgba(251, 146, 60, 0.2)',
+                            }}
+                        >
+                            on hold
+                        </span>
+                    )}
+                    {!isOnHold && (
+                        <span
+                            className="text-xs"
+                            style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}
+                        >
+                            {statusInfo.label}
+                        </span>
+                    )}
+                </div>
             </div>
 
+            {/* on hold note */}
+            {isOnHold && project.statusNote && (
+                <p className="text-xs mb-4 flex items-center gap-1.5" style={{ fontFamily: 'var(--font-mono)', color: '#fb923c' }}>
+                    ⚠ {project.statusNote}
+                </p>
+            )}
+
             {/* last updated */}
-            {project.lastUpdated && (
+            {!isOnHold && project.lastUpdated && (
                 <p className="text-xs mb-4 flex items-center gap-1.5" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
                     {Math.floor((Date.now() - new Date(project.lastUpdated).getTime()) / 86400000) < 30 && (
                         <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ background: '#4ade80' }} />
@@ -65,7 +115,7 @@ function DevProjectPanel({ project }) {
             )}
 
             {/* progress */}
-            {project.progress != null && (
+            {!isOnHold && project.progress != null && (
                 <div className="mb-5">
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-xs uppercase tracking-wider" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
@@ -80,14 +130,14 @@ function DevProjectPanel({ project }) {
             )}
 
             {/* what i'm working on right now */}
-            {project.currentFocus && (
+            {!isOnHold && project.currentFocus && (
                 <p className="text-sm italic mb-5" style={{ color: 'var(--color-text-muted)' }}>
                     Currently working on: {project.currentFocus}
                 </p>
             )}
 
             {/* roadmap as numbered list */}
-            {project.goals?.length > 0 && (
+            {!isOnHold && project.goals?.length > 0 && (
                 <div className="mb-5">
                     <span className="text-xs uppercase tracking-wider block mb-3" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
                         Roadmap
@@ -124,7 +174,25 @@ function DevProjectPanel({ project }) {
 }
 
 export default function DevHub() {
-    const activeProjects = useMemo(() => projects.filter(p => p.status.includes('active')), [])
+    // Show all projects — active first, then hobby-only, then on-hold last
+    const sortedProjects = useMemo(() => {
+        return [...projects].sort((a, b) => {
+            const aOnHold = a.status.includes('on-hold')
+            const bOnHold = b.status.includes('on-hold')
+            const aActive = a.status.includes('active')
+            const bActive = b.status.includes('active')
+
+            if (aOnHold && !bOnHold) return 1
+            if (!aOnHold && bOnHold) return -1
+            if (aActive && !bActive) return -1
+            if (!aActive && bActive) return 1
+            return 0
+        })
+    }, [])
+
+    const activeCount = projects.filter(p => p.status.includes('active')).length
+    const hobbyCount = projects.filter(p => p.status.includes('hobby') && !p.status.includes('active')).length
+    const onHoldCount = projects.filter(p => p.status.includes('on-hold')).length
 
     return (
         <main className="pt-24 pb-8">
@@ -140,13 +208,13 @@ export default function DevHub() {
                         Active projects and their current state. Progress, roadmaps, and focus areas.
                     </p>
                     <p className="mb-10 text-xs" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
-                        {activeProjects.length} active {activeProjects.length === 1 ? 'project' : 'projects'}
+                        {activeCount} active · {hobbyCount > 0 ? `${hobbyCount} hobby · ` : ''}{onHoldCount > 0 ? `${onHoldCount} on hold` : ''}
                     </p>
                 </FadeSection>
 
-                {activeProjects.length ? (
+                {sortedProjects.length ? (
                     <div className="space-y-6">
-                        {activeProjects.map(p => (
+                        {sortedProjects.map(p => (
                             <FadeSection key={p.id}>
                                 <DevProjectPanel project={p} />
                             </FadeSection>

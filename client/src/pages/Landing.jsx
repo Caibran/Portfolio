@@ -1,5 +1,5 @@
-import Terminal from '../components/Terminal'
+import { Navigate } from 'react-router-dom'
 
 export default function Landing() {
-    return <Terminal />
+    return <Navigate to="/home" replace />
 }

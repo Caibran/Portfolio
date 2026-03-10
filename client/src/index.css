@@ -449,6 +449,10 @@ textarea.input-line {
   background: #fbbf24;
 }
 
+.status-dot.on-hold {
+  background: #fb923c;
+}
+
 /* -----------------------------------------------
    button styles
    ----------------------------------------------- */
@@ -551,4 +555,40 @@ textarea.input-line {
   text-decoration: line-through;
   text-decoration-color: rgba(255, 80, 80, 0.5);
   color: var(--color-text-faint);
+}
+
+/* -----------------------------------------------
+   dimmed card panel — for on-hold projects
+   ----------------------------------------------- */
+.card-panel--dimmed {
+  opacity: 0.65;
+  filter: saturate(0.6);
+  transition: opacity var(--duration-base) var(--ease), filter var(--duration-base) var(--ease);
+}
+
+.card-panel--dimmed:hover {
+  opacity: 0.85;
+  filter: saturate(0.8);
+}
+
+/* -----------------------------------------------
+   page transitions — fade between routes
+   ----------------------------------------------- */
+.page-transition-wrapper {
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.page-transition-exit {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
 }

@@ -1,17 +1,17 @@
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import Landing from './pages/Landing'
 import Home from './pages/Home'
 import About from './pages/About'
 import CaseStudies from './pages/CaseStudies'
 import CaseStudy from './pages/CaseStudy'
+import Contributions from './pages/Contributions'
 import DevHub from './pages/DevHub'
 import Gallery from './pages/Gallery'
 import Contact from './pages/Contact'
 import System from './pages/System'
 import Navbar from './components/Navbar'
 
-const navPages = ['/home', '/about', '/casestudies', '/devhub', '/gallery', '/contact']
+const navPages = ['/home', '/about', '/casestudies', '/contributions', '/devhub', '/gallery', '/contact']
 
 // each section gets a full atmosphere — not just hue, but feel
 // atmospheres: binary tracking (tight/normal), warm/cool tint groups
@@ -24,6 +24,7 @@ const pageAtmospheres = {
     '/home': { accent: '#c47a4a', bgTint: WARM_TINT, shadowStrength: '0.12', headingTracking: TIGHT, sectionGap: '5rem' },
     '/about': { accent: '#c4884a', bgTint: WARM_TINT, shadowStrength: '0.10', headingTracking: NORMAL, sectionGap: '4.5rem' },
     '/casestudies': { accent: '#a07858', bgTint: WARM_TINT, shadowStrength: '0.14', headingTracking: TIGHT, sectionGap: '3.5rem' },
+    '/contributions': { accent: '#8a7ac4', bgTint: COOL_TINT, shadowStrength: '0.14', headingTracking: TIGHT, sectionGap: '3.5rem' },
     '/devhub': { accent: '#7a9a8a', bgTint: COOL_TINT, shadowStrength: '0.16', headingTracking: TIGHT, sectionGap: '3rem' },
     '/gallery': { accent: '#c4644a', bgTint: COOL_TINT, shadowStrength: '0.18', headingTracking: NORMAL, sectionGap: '5.5rem' },
     '/contact': { accent: '#c47a4a', bgTint: WARM_TINT, shadowStrength: '0.10', headingTracking: NORMAL, sectionGap: '4rem' },
@@ -59,10 +60,13 @@ export default function App() {
         root.setProperty('--page-section-gap', atmos.sectionGap)
     }, [pathname])
 
-    // arrow keys cycle through pages with nudge + keyboard badge
+    // arrow keys cycle through pages with smooth fade + keyboard badge
     useEffect(() => {
+        let isTransitioning = false
+
         const handler = (e) => {
             if (pathname === '/' || e.metaKey || e.ctrlKey || e.altKey) return
+            if (isTransitioning) return
             const tag = document.activeElement?.tagName
             if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
 
@@ -81,7 +85,27 @@ export default function App() {
                     ? navPages[(idx + 1) % navPages.length]
                     : navPages[(idx - 1 + navPages.length) % navPages.length]
 
-                navigate(next)
+                // smooth page transition: fade out → navigate → fade in
+                isTransitioning = true
+                if (contentRef.current) {
+                    contentRef.current.style.transition = 'opacity 0.2s ease, transform 0.2s ease'
+                    contentRef.current.style.opacity = '0'
+                    contentRef.current.style.transform = 'translateY(-6px)'
+                }
+
+                setTimeout(() => {
+                    navigate(next)
+                    if (contentRef.current) {
+                        contentRef.current.style.transform = 'translateY(6px)'
+                    }
+                    requestAnimationFrame(() => {
+                        if (contentRef.current) {
+                            contentRef.current.style.opacity = '1'
+                            contentRef.current.style.transform = 'translateY(0)'
+                        }
+                        isTransitioning = false
+                    })
+                }, 200)
             }
         }
 
@@ -102,11 +126,12 @@ export default function App() {
         <div ref={contentRef} className="min-h-screen relative" style={{ zIndex: 1 }}>
             {showNav && <Navbar />}
             <Routes>
-                <Route path="/" element={<Landing />} />
+                <Route path="/" element={<Navigate to="/home" replace />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/casestudies" element={<CaseStudies />} />
                 <Route path="/casestudies/:slug" element={<CaseStudy />} />
+                <Route path="/contributions" element={<Contributions />} />
                 <Route path="/devhub" element={<DevHub />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/gallery/:projectId" element={<Gallery />} />

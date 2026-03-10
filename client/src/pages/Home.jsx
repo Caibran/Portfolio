@@ -8,7 +8,7 @@ const sectionIds = ['identity', 'philosophy', 'flagship', 'secondary', 'explore'
 
 export default function Home() {
     const currentSection = useRef(0)
-    const shards = projects.find(p => p.title === 'Shards of Eternity')
+    const shards = projects.find(p => p.title === 'SOE_Server')
     const anomaly = projects.find(p => p.title === 'Anomaly Editor')
 
     const scrollToSection = useCallback((index) => {
@@ -115,21 +115,25 @@ export default function Home() {
                     <h2 className="text-3xl font-bold mt-2 mb-2 heading-live" style={{ color: 'var(--color-text)' }}>
                         {shards?.title || 'Shards of Eternity'}
                     </h2>
-                    <p className="text-sm mb-8" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
-                        Multiplayer MMO — C server · C# client · SQL backend
+                    <p className="text-sm mb-2" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
+                        Multiplayer MMO — C++ server · TypeScript web client · WebSocket · SQL
+                    </p>
+                    <p className="text-xs mb-8" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
+                        Personal hobby project — real engineering, personal passion
                     </p>
                     <p className="leading-relaxed mb-8" style={{ color: 'var(--color-text-muted)' }}>
-                        A long-running multiplayer game built on a forked server/client foundation and extensively
-                        expanded with custom systems, database features, and gameplay mechanics. Designed and
-                        maintained as a full-stack multiplayer system across four repositories.
+                        A multi-repository multiplayer game built across C++ server, browser-based TypeScript client,
+                        JavaScript tooling, and a game community website. What started as a personal interest in
+                        multiplayer architecture has grown into a full-stack system covering networking, persistence,
+                        rendering, and content tooling.
                     </p>
                     <ul className="space-y-3 mb-8">
                         {[
-                            'Custom server-side gameplay systems in C++',
-                            'Database schema design, migration, and persistence layers',
-                            'Client modifications and UI rendering in C#',
-                            'Custom binary protocol and packet serialization',
-                            'Multi-repository architecture across four languages',
+                            'Custom C++ server with WebSocket support for browser-based gameplay',
+                            'TypeScript web client with dark fantasy UI, gamepad support, and WebGL rendering',
+                            'Database schema design, migration, and persistence layers (SQLite/MariaDB)',
+                            'Custom binary protocol with WebSocket bridging',
+                            'Multi-repository architecture spanning 7+ projects and 4 languages',
                         ].map((item, i) => (
                             <li key={i} className="flex items-start gap-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                                 <span style={{ color: 'var(--color-accent)', flexShrink: 0, marginTop: '2px' }}>▸</span>
@@ -139,11 +143,18 @@ export default function Home() {
                     </ul>
                     <div className="flex items-center gap-4">
                         <Link
-                            to="/gallery/3"
+                            to="/gallery/2"
                             className="text-sm link-reveal"
                             style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}
                         >
                             deep dive →
+                        </Link>
+                        <Link
+                            to="/contributions"
+                            className="text-sm link-reveal"
+                            style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}
+                        >
+                            contributions →
                         </Link>
                         {shards?.url && (
                             <a
@@ -228,7 +239,7 @@ export default function Home() {
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                             <Link to="/system" className="btn-primary">View Architecture</Link>
-                            <Link to="/" className="btn-ghost">Open Terminal</Link>
+                            <Link to="/contributions" className="btn-ghost">Contributions</Link>
                         </div>
                         <p className="text-xs mt-6" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-faint)' }}>
                             More work available in{' '}
